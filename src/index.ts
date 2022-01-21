@@ -1,12 +1,29 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db");
+const Pool = require("pg").Pool;
+const { Client } = require("pg");
+require("dotenv").config();
 import { Request, Response } from "express";
 
 const app = express();
-
 const port = process.env.PORT || 8080;
 
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
+const pool = new Pool({
+  user: process.env.USER!,
+  password: process.env.PASSWORD!,
+  host: process.env.HOST!,
+  port: process.env.PSQLPORT!,
+  database: process.env.DATABASE!,
+});
+
+client.connect();
 app.use(cors());
 app.use(express.json());
 
@@ -289,6 +306,6 @@ app.delete(
   }
 );
 
-app.listen((port), () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}.`);
 });
