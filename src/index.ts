@@ -16,11 +16,15 @@ const client = new Client({
 });
 
 const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
   user: process.env.USER!,
   password: process.env.PASSWORD!,
   host: process.env.HOST!,
   port: process.env.PSQLPORT!,
   database: process.env.DATABASE!,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 client.connect();
@@ -35,7 +39,7 @@ app.post("/users", async (req: Request, res: Response) => {
     req.body;
 
   try {
-    const newUser = await client.query(
+    const newUser = await pool.query(
       `
     INSERT INTO users(user_id,email,first_name,last_name,bio,avatar,location,date_joined) 
     VALUES ($1,$2,$3,$4,$5,$6,$7,to_timestamp(${Date.now() / 1000}))
@@ -129,12 +133,11 @@ app.put("/posts/:user_id/:post_number", async (req: Request, res: Response) => {
 // All users
 app.get("/users", async (req: Request, res: Response) => {
   try {
-    const users = await client.query("SELECT * FROM users");
+    const users = await pool.query("SELECT * FROM users");
     res.json(users.rows);
   } catch (err: any) {
     res.json(err);
   }
-  client.end()
 });
 
 // All posts
