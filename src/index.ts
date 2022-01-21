@@ -35,7 +35,7 @@ app.post("/users", async (req: Request, res: Response) => {
     req.body;
 
   try {
-    const newUser = await pool.query(
+    const newUser = await client.query(
       `
     INSERT INTO users(user_id,email,first_name,last_name,bio,avatar,location,date_joined) 
     VALUES ($1,$2,$3,$4,$5,$6,$7,to_timestamp(${Date.now() / 1000}))
