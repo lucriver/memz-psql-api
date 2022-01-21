@@ -27,7 +27,7 @@ const pool = new Pool({
   },
 });
 
-client.connect();
+pool.connect();
 app.use(cors());
 app.use(express.json());
 
@@ -39,7 +39,7 @@ app.post("/users", async (req: Request, res: Response) => {
     req.body;
 
   try {
-    const newUser = await client.query(
+    const newUser = await pool.query(
       `
     INSERT INTO users(user_id,email,first_name,last_name,bio,avatar,location,date_joined) 
     VALUES ($1,$2,$3,$4,$5,$6,$7,to_timestamp(${Date.now() / 1000}))
@@ -58,7 +58,7 @@ app.post("/posts", async (req: Request, res: Response) => {
   const { user_id, post_type, title, description, url, tags } = req.body;
 
   try {
-    const post = await client.query(
+    const post = await pool.query(
       `
     INSERT INTO posts(user_id,post_type,title,description,url,tags,date_posted) 
     VALUES ($1,$2,$3,$4,$5,$6,to_timestamp(${Date.now() / 1000}))
@@ -154,7 +154,7 @@ app.get("/posts", async (req: Request, res: Response) => {
 app.get("/users/:user_id", async (req: Request, res: Response) => {
   const user_id = req.params.user_id;
   try {
-    const user = await client.query(`SELECT * FROM users WHERE (user_id)=($1)`, [
+    const user = await pool.query(`SELECT * FROM users WHERE (user_id)=($1)`, [
       user_id,
     ]);
     res.json(user.rows[0]);
