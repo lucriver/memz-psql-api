@@ -129,11 +129,12 @@ app.put("/posts/:user_id/:post_number", async (req: Request, res: Response) => {
 // All users
 app.get("/users", async (req: Request, res: Response) => {
   try {
-    const users = await pool.query("SELECT * FROM users");
+    const users = await client.query("SELECT * FROM users");
     res.json(users.rows);
   } catch (err: any) {
     res.json(err);
   }
+  client.end()
 });
 
 // All posts
