@@ -1,19 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const Pool = require("pg").Pool;
-const { Client } = require("pg");
 require("dotenv").config();
 import { Request, Response } from "express";
 
 const app = express();
 const port = process.env.PORT || 8080;
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
