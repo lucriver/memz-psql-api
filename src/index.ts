@@ -27,6 +27,14 @@ app.use(express.json());
 
 // Add single user
 app.post("/users", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
+
   const { user_id, email, first_name, last_name, bio, avatar, location } =
     req.body;
 
@@ -49,6 +57,13 @@ app.post("/users", async (req: Request, res: Response) => {
 app.post("/posts", async (req: Request, res: Response) => {
   const { user_id, post_type, title, description, url, tags } = req.body;
 
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY)
+    return res.json({ error: "Invalid credentials." });
+
   try {
     const post = await pool.query(
       `
@@ -70,6 +85,13 @@ app.post("/posts", async (req: Request, res: Response) => {
 
 // Update single user
 app.put("/users/:user_id", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   const user_id = req.params.user_id;
   const { email, first_name, last_name, bio, avatar, location } = req.body;
   try {
@@ -95,6 +117,13 @@ app.put("/users/:user_id", async (req: Request, res: Response) => {
 
 // Update post(s)
 app.put("/posts/:user_id/:post_number", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   const user_id = req.params.user_id;
   const post_number = req.params.post_number;
   const { post_type, title, description, url, tags } = req.body;
@@ -124,6 +153,19 @@ app.put("/posts/:user_id/:post_number", async (req: Request, res: Response) => {
 
 // All users
 app.get("/users", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY)
+    return res.json({ error: "Invalid credentials." });
   try {
     const users = await pool.query("SELECT * FROM users");
     res.json(users.rows);
@@ -134,6 +176,13 @@ app.get("/users", async (req: Request, res: Response) => {
 
 // All posts
 app.get("/posts", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   try {
     const posts = await pool.query(`SELECT * FROM posts`);
     res.json(posts.rows);
@@ -144,6 +193,13 @@ app.get("/posts", async (req: Request, res: Response) => {
 
 // Single User
 app.get("/users/:user_id", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   const user_id = req.params.user_id;
   try {
     const user = await pool.query(`SELECT * FROM users WHERE (user_id)=($1)`, [
@@ -157,6 +213,13 @@ app.get("/users/:user_id", async (req: Request, res: Response) => {
 
 // Posts for single user, with optional filter by type
 app.get("/posts/:user_id/:filter", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   const user_id = req.params.user_id;
   const filter = req.params.filter;
 
@@ -195,6 +258,13 @@ app.get("/posts/:user_id/:filter", async (req: Request, res: Response) => {
 app.get(
   "/posts/:user_id/post/:post_number",
   async (req: Request, res: Response) => {
+    if (!req.headers.authorization) {
+      return res.json({ error: "No credentials sent!" });
+    }
+
+    if (req.headers.authorization !== process.env.ACCESSKEY) {
+      return res.json({ error: "Invalid credentials." });
+    }
     const user_id = req.params.user_id;
     const post_number = req.params.post_number;
 
@@ -218,6 +288,13 @@ app.get(
 
 // Delete a user (also deletes all of their posts)
 app.delete("/users/:user_id", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   const user_id = req.params.user_id;
   try {
     await pool.query(
@@ -244,6 +321,13 @@ app.delete("/users/:user_id", async (req: Request, res: Response) => {
 
 // Delete all posts of a user by type, or all of them.
 app.delete("/posts/:user_id/:filter", async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    return res.json({ error: "No credentials sent!" });
+  }
+
+  if (req.headers.authorization !== process.env.ACCESSKEY) {
+    return res.json({ error: "Invalid credentials." });
+  }
   const user_id = req.params.user_id;
   const filter = req.params.filter;
 
@@ -284,6 +368,13 @@ app.delete("/posts/:user_id/:filter", async (req: Request, res: Response) => {
 app.delete(
   "/posts/:user_id/post/:post_number",
   async (req: Request, res: Response) => {
+    if (!req.headers.authorization) {
+      return res.json({ error: "No credentials sent!" });
+    }
+
+    if (req.headers.authorization !== process.env.ACCESSKEY) {
+      return res.json({ error: "Invalid credentials." });
+    }
     const user_id = req.params.user_id;
     const post_number = req.params.post_number;
     try {
